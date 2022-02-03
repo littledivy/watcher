@@ -136,7 +136,7 @@ Value getEventsSince(const CallbackInfo& info) {
 
 class SubscribeRunner : public PromiseRunner {
 public:
-  SubscribeRunner(Env env, Value dir, Value fn, Value opts) : PromiseRunner(env), env(env) {
+  SubscribeRunner(Env env, Value dir, Value fn, Value opts) : PromiseRunner(env) {
     watcher = Watcher::getShared(
       env,
       std::string(dir.As<String>().Utf8Value().c_str()),
