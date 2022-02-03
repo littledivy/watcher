@@ -13,6 +13,7 @@
 #define CONVERT_TIME(ts) ((uint64_t)ts.tv_sec * 1000000000 + ts.tv_nsec)
 #if __APPLE__
 #define st_mtim st_mtimespec
+#include <sys/stat.h>
 #endif
 
 void BruteForceBackend::readTree(Watcher &watcher, std::shared_ptr<DirTree> tree) {

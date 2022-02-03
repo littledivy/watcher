@@ -44,6 +44,7 @@ public:
     : PromiseRunner(env),
       snapshotPath(std::string(snap.As<String>().Utf8Value().c_str())) {
     watcher = Watcher::getShared(
+      env,
       std::string(dir.As<String>().Utf8Value().c_str()),
       getIgnore(env, opts)
     );
@@ -71,6 +72,7 @@ public:
     : PromiseRunner(env),
       snapshotPath(std::string(snap.As<String>().Utf8Value().c_str())) {
     watcher = std::make_shared<Watcher>(
+      env,
       std::string(dir.As<String>().Utf8Value().c_str()),
       getIgnore(env, opts)
     );
@@ -134,8 +136,9 @@ Value getEventsSince(const CallbackInfo& info) {
 
 class SubscribeRunner : public PromiseRunner {
 public:
-  SubscribeRunner(Env env, Value dir, Value fn, Value opts) : PromiseRunner(env) {
+  SubscribeRunner(Env env, Value dir, Value fn, Value opts) : PromiseRunner(env), env(env) {
     watcher = Watcher::getShared(
+      env,
       std::string(dir.As<String>().Utf8Value().c_str()),
       getIgnore(env, opts)
     );
@@ -159,6 +162,7 @@ class UnsubscribeRunner : public PromiseRunner {
 public:
   UnsubscribeRunner(Env env, Value dir, Value fn, Value opts) : PromiseRunner(env) {
     watcher = Watcher::getShared(
+      env,
       std::string(dir.As<String>().Utf8Value().c_str()),
       getIgnore(env, opts)
     );

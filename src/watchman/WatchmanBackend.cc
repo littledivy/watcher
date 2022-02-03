@@ -16,6 +16,12 @@
 #define normalizePath(dir) dir
 #endif
 
+#ifdef __APPLE__
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
 template<typename T>
 BSER readBSER(T &&do_read) {
   std::stringstream oss;

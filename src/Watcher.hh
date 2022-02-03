@@ -4,7 +4,7 @@
 #include <condition_variable>
 #include <unordered_set>
 #include <set>
-#include <uv.h>
+#include <napi.h>
 #include <node_api.h>
 #include "Event.hh"
 #include "Debounce.hh"
@@ -16,11 +16,12 @@ using namespace Napi;
 struct Watcher {
   std::string mDir;
   std::unordered_set<std::string> mIgnore;
+  const Env env;
   EventList mEvents;
   void *state;
   bool mWatched;
 
-  Watcher(std::string dir, std::unordered_set<std::string> ignore);
+  Watcher(Env env, std::string dir, std::unordered_set<std::string> ignore);
   ~Watcher();
 
   bool operator==(const Watcher &other) const {
@@ -35,13 +36,13 @@ struct Watcher {
   void unref();
   bool isIgnored(std::string path);
 
-  static std::shared_ptr<Watcher> getShared(std::string dir, std::unordered_set<std::string> ignore);
+  static std::shared_ptr<Watcher> getShared(Env env, std::string dir, std::unordered_set<std::string> ignore);
 
 private:
   std::mutex mMutex;
   std::mutex mCallbackEventsMutex;
   std::condition_variable mCond;
-  uv_async_t *mAsync;
+  napi_async_work mAsync;
   std::set<FunctionReference> mCallbacks;
   std::set<FunctionReference>::iterator mCallbacksIterator;
   bool mCallingCallbacks;
@@ -53,8 +54,7 @@ private:
   Value callbackEventsToJS(const Env& env);
   void clearCallbacks();
   void triggerCallbacks();
-  static void fireCallbacks(uv_async_t *handle);
-  static void onClose(uv_handle_t *handle);
+  static void fireCallbacks(napi_env env, void *watcher_pointer);
 };
 
 class WatcherError : public std::runtime_error {
